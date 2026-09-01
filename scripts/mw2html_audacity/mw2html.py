@@ -764,7 +764,8 @@ def url_to_filename(url):
 
     if mimetype.startswith('text'):
         f = open(ans, 'w', encoding='utf8')
-        doc = str(doc)
+        if isinstance(doc, bytes):
+            doc = doc.decode('utf-8', errors='replace')
     else:
         f = open(ans, 'wb')
 
@@ -943,17 +944,6 @@ def parse_html(doc, url, filename):
     # remove the comments.
     p = re.compile( '<!--.*?-->', re.DOTALL)
     newdoc = p.sub( '', newdoc )
-    # Remove byte artifacts in string
-    newdoc = newdoc.replace('\\n','\n')
-    newdoc = newdoc.replace('\\t', '\t')
-    newdoc = newdoc.replace('\\\'', '\'')
-    newdoc = newdoc.replace('\\\\', '\\')
-    newdoc = newdoc.replace('\\xe2\\x80\\x99','\'')
-    newdoc = newdoc.replace('\\xe2\\x80\\x90', '-')
-    newdoc = newdoc.strip('b')
-    newdoc = newdoc.strip('\'')
-    newdoc = newdoc.strip('')
-
     return (newdoc, new_urls)
 
 def deploy_file( src, dest ):
@@ -1034,7 +1024,7 @@ def run(out=sys.stdout):
         if not filename.endswith(text_ext):
             f = open(filename, 'rb')
         else:
-            f = open(filename, 'r')
+            f = open(filename, 'r', encoding='utf8')
         doc = f.read()
         f.close()
         new_urls = []
@@ -1053,7 +1043,7 @@ def run(out=sys.stdout):
                 break
 
         if update:
-            f = open(filename, 'w')
+            f = open(filename, 'w', encoding='utf8')
             f.write(doc)
             f.close()
 
