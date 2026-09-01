@@ -20,10 +20,13 @@ jobs:
          mkdir -p help
          cp -R manual help/
          tar czf audacity-manual-${{ github.event.inputs.version }}.tar.gz help
+         zip -r -q audacity-manual-${{ github.event.inputs.version }}.zip help
 
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
             body: 'Audacity manual for version ${{ github.event.inputs.version }}'
             tag_name: v${{ github.event.inputs.version }}
-            files: '*.tar.gz'
+            files: |
+               *.tar.gz
+               *.zip
